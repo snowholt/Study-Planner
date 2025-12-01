@@ -51,11 +51,11 @@ export default function GuestSettings() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Header */}
-      <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)]">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
+      <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 py-4 relative flex items-center justify-center">
           <button 
             onClick={() => navigate('/')}
-            className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
+            className="absolute left-4 p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-[var(--text-secondary)]" />
           </button>
@@ -63,35 +63,35 @@ export default function GuestSettings() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-2xl mx-auto px-4 py-12 space-y-8">
         {/* Guest Notice */}
-        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20 shadow-lg shadow-purple-500/5">
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20 shadow-lg shadow-purple-500/5">
+          <div className="flex items-start justify-between gap-6 mb-6">
             <div>
-              <h2 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">
                 You're using Study Planner as a guest
               </h2>
-              <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+              <p className="text-base text-[var(--text-secondary)] leading-relaxed">
                 Your API key and conversations are stored locally in your browser. 
                 Create an account to save your data across devices and unlock all features.
               </p>
             </div>
-            <div className="hidden sm:block p-3 bg-purple-500/10 rounded-xl">
-              <UserPlus className="w-6 h-6 text-purple-400" />
+            <div className="hidden sm:flex p-4 bg-purple-500/10 rounded-2xl shrink-0">
+              <UserPlus className="w-8 h-8 text-purple-400" />
             </div>
           </div>
           <button
             onClick={() => navigate('/register')}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20"
+            className="w-full inline-flex items-center justify-center gap-3 py-4 px-8 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20 text-lg"
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus className="w-5 h-5" />
             Create Free Account
           </button>
         </div>
 
         {/* API Key Section */}
-        <div className="bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)] shadow-sm">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-[var(--bg-secondary)] rounded-2xl p-8 border border-[var(--border-color)] shadow-sm">
+          <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-lg font-medium text-[var(--text-primary)] mb-1">Google API Key</h2>
               <p className="text-sm text-[var(--text-secondary)]">
@@ -102,10 +102,10 @@ export default function GuestSettings() {
               href="https://aistudio.google.com/apikey" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-xs font-medium text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1"
+              className="text-sm font-medium text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1.5 bg-purple-500/5 px-3 py-1.5 rounded-lg transition-colors"
             >
               Get API Key
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
 
@@ -185,7 +185,7 @@ export default function GuestSettings() {
         </div>
 
         {/* Benefits of signing up */}
-        <div className="bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)] shadow-sm">
+        <div className="bg-[var(--bg-secondary)] rounded-2xl p-8 border border-[var(--border-color)] shadow-sm">
           <h2 className="text-lg font-medium text-[var(--text-primary)] mb-6">Why create an account?</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
