@@ -65,97 +65,117 @@ export default function GuestSettings() {
 
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         {/* Guest Notice */}
-        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20">
-          <h2 className="text-lg font-medium text-[var(--text-primary)] mb-2">
-            You're using Study Planner as a guest
-          </h2>
-          <p className="text-sm text-[var(--text-secondary)] mb-4">
-            Your API key and conversations are stored locally in your browser. 
-            Create an account to save your data across devices and unlock all features.
-          </p>
+        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20 shadow-lg shadow-purple-500/5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+                You're using Study Planner as a guest
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                Your API key and conversations are stored locally in your browser. 
+                Create an account to save your data across devices and unlock all features.
+              </p>
+            </div>
+            <div className="hidden sm:block p-3 bg-purple-500/10 rounded-xl">
+              <UserPlus className="w-6 h-6 text-purple-400" />
+            </div>
+          </div>
           <button
             onClick={() => navigate('/register')}
-            className="inline-flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:opacity-90 transition-opacity"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20"
           >
             <UserPlus className="w-4 h-4" />
-            Create Account
+            Create Free Account
           </button>
         </div>
 
         {/* API Key Section */}
-        <div className="bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)]">
-          <h2 className="text-lg font-medium text-[var(--text-primary)] mb-2">Google API Key</h2>
-          <p className="text-sm text-[var(--text-secondary)] mb-4">
-            To use the AI assistant, you need a Google API key. Get one for free from{' '}
+        <div className="bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)] shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-medium text-[var(--text-primary)] mb-1">Google API Key</h2>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Required to power the AI assistant
+              </p>
+            </div>
             <a 
               href="https://aistudio.google.com/apikey" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-purple-400 hover:underline"
+              className="text-xs font-medium text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1"
             >
-              Google AI Studio
+              Get API Key
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
-          </p>
+          </div>
 
           {/* Status */}
-          <div className="mb-4 p-3 rounded-xl bg-[var(--bg-tertiary)]">
-            <p className="text-sm">
-              <span className="text-[var(--text-secondary)]">Status: </span>
-              {guestApiKey ? (
-                <span className="text-green-400">API key configured ✓</span>
-              ) : (
-                <span className="text-yellow-400">Not set - required to chat</span>
-              )}
-            </p>
+          <div className={`mb-6 p-4 rounded-xl border ${guestApiKey ? 'bg-green-500/5 border-green-500/20' : 'bg-yellow-500/5 border-yellow-500/20'}`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${guestApiKey ? 'bg-green-500/10' : 'bg-yellow-500/10'}`}>
+                {guestApiKey ? <Check className="w-4 h-4 text-green-400" /> : <AlertCircle className="w-4 h-4 text-yellow-400" />}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">
+                  {guestApiKey ? 'API Key Configured' : 'API Key Missing'}
+                </p>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  {guestApiKey ? 'You are ready to start chatting' : 'Please enter your key below to continue'}
+                </p>
+              </div>
+            </div>
           </div>
 
           {success && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 mb-4">
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 mb-4 animate-in fade-in slide-in-from-top-2">
               <Check className="w-5 h-5" />
               <span className="text-sm">{success}</span>
             </div>
           )}
 
           {error && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 mb-4">
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 mb-4 animate-in fade-in slide-in-from-top-2">
               <AlertCircle className="w-5 h-5" />
               <span className="text-sm">{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-[var(--bg-primary)] text-[var(--text-secondary)] group-focus-within:text-purple-400 transition-colors">
+                <Key className="w-4 h-4" />
+              </div>
               <input
                 type={showApiKey ? 'text' : 'password'}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder={guestApiKey ? '••••••••••••••••••••' : 'Enter your Google API key'}
-                style={{ paddingLeft: '48px' }}
-                className="w-full pr-12 py-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-purple-500 transition-colors"
+                style={{ paddingLeft: '52px' }}
+                className="w-full pr-12 py-3.5 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowApiKey(!showApiKey)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
-                {showApiKey ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
               <button
                 type="submit"
                 disabled={!apiKey}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2.5 px-4 rounded-xl bg-[var(--text-primary)] text-[var(--bg-primary)] font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
               >
-                Save API Key
+                Save Configuration
               </button>
               {guestApiKey && (
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="py-2.5 px-4 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="py-2.5 px-4 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all"
+                  title="Remove API Key"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -165,26 +185,46 @@ export default function GuestSettings() {
         </div>
 
         {/* Benefits of signing up */}
-        <div className="bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)]">
-          <h2 className="text-lg font-medium text-[var(--text-primary)] mb-4">Why create an account?</h2>
-          <ul className="space-y-3 text-sm text-[var(--text-secondary)]">
-            <li className="flex items-start gap-2">
-              <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-              <span>Save your conversations and access them from any device</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-              <span>Securely store your API key with encryption</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-              <span>Unlimited conversations without prompts</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-              <span>It's completely free!</span>
-            </li>
-          </ul>
+        <div className="bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)] shadow-sm">
+          <h2 className="text-lg font-medium text-[var(--text-primary)] mb-6">Why create an account?</h2>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
+              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
+                <Check className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">Sync Devices</p>
+                <p className="text-xs text-[var(--text-secondary)]">Access chats anywhere</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
+              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
+                <Check className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">Secure Storage</p>
+                <p className="text-xs text-[var(--text-secondary)]">Encrypted key vault</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
+              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
+                <Check className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">No Limits</p>
+                <p className="text-xs text-[var(--text-secondary)]">Unlimited conversations</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
+              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
+                <Check className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">Always Free</p>
+                <p className="text-xs text-[var(--text-secondary)]">No credit card needed</p>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
