@@ -76,3 +76,16 @@ class ChatResponse(BaseModel):
     """Chat response from ADK."""
     response: str
     session_id: int
+
+
+# Guest models
+class GuestChatRequest(BaseModel):
+    """Guest chat request - includes API key."""
+    message: str
+    api_key: str = Field(..., min_length=10)
+    conversation_history: Optional[list[dict]] = []
+
+
+class GuestChatResponse(BaseModel):
+    """Guest chat response."""
+    response: str

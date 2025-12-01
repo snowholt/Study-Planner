@@ -2,52 +2,116 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
+import { useGuestStore } from '../stores/guestStore';
+import SignupPrompt from '../components/SignupPrompt';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import api from '../lib/api';
 import { 
   Plus, 
   Send, 
   Settings, 
   LogOut, 
+  LogIn,
   MessageSquare, 
   Trash2,
   BookOpen,
   Loader2,
   Menu,
   X,
-  AlertCircle
+  AlertCircle,
+  UserPlus
 } from 'lucide-react';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export default function Chat() {
   const { user, token, logout } = useAuthStore();
   const { 
     sessions, 
     currentSession, 
-    messages, 
-    isSending, 
-    error,
+    messages: authMessages, 
+    isSending: authIsSending, 
+    error: authError,
     loadSessions, 
     createSession, 
     selectSession, 
     deleteSession,
-    sendMessage,
-    clearError 
+    sendMessage: authSendMessage,
+    clearError: authClearError 
   } = useChatStore();
+  
+  const {
+    guestApiKey,
+    guestMessages,
+    addGuestMessage,
+    clearGuestMessages,
+    incrementMessageCount,
+    checkShouldShowPrompt,
+    showSignupPrompt,
+    showPrompt
+  } = useGuestStore();
   
   const [input, setInput] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [guestSending, setGuestSending] = useState(false);
+  const [guestError, setGuestError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
 
+  // Determine if user is authenticated
+  const isAuthenticated = !!token;
+  
+  // Use appropriate state based on auth status
+  const messages: Message[] = isAuthenticated ? authMessages : guestMessages;
+  const isSending = isAuthenticated ? authIsSending : guestSending;
+  const error = isAuthenticated ? authError : guestError;
+  const hasApiKey = isAuthenticated ? user?.has_api_key : !!guestApiKey;
+
   useEffect(() => {
-    // Only load sessions when we have a token
-    if (token) {
+    if (isAuthenticated) {
       loadSessions();
     }
-  }, [loadSessions, token]);
+  }, [loadSessions, isAuthenticated]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Guest message handler
+  const sendGuestMessage = async (message: string) => {
+    if (!guestApiKey) return;
+    
+    setGuestSending(true);
+    setGuestError(null);
+    
+    // Add user message immediately
+    addGuestMessage({ role: 'user', content: message, timestamp: Date.now() });
+    incrementMessageCount();
+    
+    try {
+      const response = await api.post('/chat/guest', {
+        message,
+        api_key: guestApiKey,
+        conversation_history: guestMessages.map(m => ({ role: m.role, content: m.content }))
+      });
+      
+      addGuestMessage({ role: 'assistant', content: response.data.response, timestamp: Date.now() });
+      
+      // Check if we should show signup prompt
+      if (checkShouldShowPrompt()) {
+        showPrompt();
+      }
+    } catch (err: any) {
+      setGuestError(err.response?.data?.detail || 'Failed to send message');
+    } finally {
+      setGuestSending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +119,12 @@ export default function Chat() {
 
     const message = input.trim();
     setInput('');
-    await sendMessage(message);
+    
+    if (isAuthenticated) {
+      await authSendMessage(message);
+    } else {
+      await sendGuestMessage(message);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -66,16 +135,32 @@ export default function Chat() {
   };
 
   const handleNewChat = async () => {
-    await createSession();
+    if (isAuthenticated) {
+      await createSession();
+    } else {
+      clearGuestMessages();
+    }
   };
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
   };
+
+  const clearError = () => {
+    if (isAuthenticated) {
+      authClearError();
+    } else {
+      setGuestError(null);
+    }
+  };
+
+  const settingsPath = isAuthenticated ? '/settings' : '/guest-settings';
 
   return (
     <div className="h-screen flex bg-[var(--bg-primary)]">
+      {/* Signup Prompt Modal */}
+      {showSignupPrompt && <SignupPrompt />}
+      
       {/* Sidebar */}
       <aside 
         className={`${
@@ -90,7 +175,9 @@ export default function Chat() {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="font-semibold text-[var(--text-primary)] truncate">Study Planner</h2>
-              <p className="text-xs text-[var(--text-secondary)] truncate">{user?.username}</p>
+              <p className="text-xs text-[var(--text-secondary)] truncate">
+                {isAuthenticated ? user?.username : 'Guest User'}
+              </p>
             </div>
           </div>
           <button
@@ -104,37 +191,52 @@ export default function Chat() {
 
         {/* Sessions List */}
         <div className="flex-1 overflow-y-auto p-2">
-          {sessions.length === 0 ? (
-            <p className="text-center text-[var(--text-secondary)] text-sm py-8">
-              No conversations yet
-            </p>
-          ) : (
-            <div className="space-y-1">
-              {sessions.map((session) => (
-                <div
-                  key={session.id}
-                  className={`group flex items-center gap-2 p-3 rounded-xl cursor-pointer transition-colors ${
-                    currentSession?.id === session.id
-                      ? 'bg-[var(--bg-tertiary)]'
-                      : 'hover:bg-[var(--bg-tertiary)]/50'
-                  }`}
-                  onClick={() => selectSession(session)}
-                >
-                  <MessageSquare className="w-4 h-4 text-[var(--text-secondary)] flex-shrink-0" />
-                  <span className="flex-1 text-sm text-[var(--text-primary)] truncate">
-                    {session.title}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteSession(session.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-[var(--text-secondary)] hover:text-red-400 transition-all"
+          {isAuthenticated ? (
+            sessions.length === 0 ? (
+              <p className="text-center text-[var(--text-secondary)] text-sm py-8">
+                No conversations yet
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    className={`group flex items-center gap-2 p-3 rounded-xl cursor-pointer transition-colors ${
+                      currentSession?.id === session.id
+                        ? 'bg-[var(--bg-tertiary)]'
+                        : 'hover:bg-[var(--bg-tertiary)]/50'
+                    }`}
+                    onClick={() => selectSession(session)}
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                    <MessageSquare className="w-4 h-4 text-[var(--text-secondary)] flex-shrink-0" />
+                    <span className="flex-1 text-sm text-[var(--text-primary)] truncate">
+                      {session.title}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSession(session.id);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-[var(--text-secondary)] hover:text-red-400 transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
+            <div className="text-center py-8 px-4">
+              <p className="text-[var(--text-secondary)] text-sm mb-4">
+                Sign in to save your conversations
+              </p>
+              <button
+                onClick={() => navigate('/register')}
+                className="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300"
+              >
+                <UserPlus className="w-4 h-4" />
+                Create Account
+              </button>
             </div>
           )}
         </div>
@@ -142,19 +244,29 @@ export default function Chat() {
         {/* Sidebar Footer */}
         <div className="p-2 border-t border-[var(--border-color)]">
           <button
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate(settingsPath)}
             className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
           >
             <Settings className="w-5 h-5" />
             <span className="text-sm">Settings</span>
           </button>
-          <button
-            onClick={handleLogout}
-            className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="text-sm">Sign out</span>
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="text-sm">Sign out</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
+            >
+              <LogIn className="w-5 h-5" />
+              <span className="text-sm">Sign in</span>
+            </button>
+          )}
         </div>
       </aside>
 
@@ -168,9 +280,17 @@ export default function Chat() {
           >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
-          <h1 className="font-medium text-[var(--text-primary)] truncate">
-            {currentSession?.title || 'New Conversation'}
+          <h1 className="font-medium text-[var(--text-primary)] truncate flex-1">
+            {isAuthenticated ? (currentSession?.title || 'New Conversation') : 'Guest Session'}
           </h1>
+          {!isAuthenticated && (
+            <button
+              onClick={() => navigate('/register')}
+              className="text-xs px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
+            >
+              Sign Up Free
+            </button>
+          )}
         </header>
 
         {/* Error Banner */}
@@ -189,7 +309,7 @@ export default function Chat() {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4">
-          {messages.length === 0 && !user?.has_api_key ? (
+          {messages.length === 0 && !hasApiKey ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-4">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-4">
                 <BookOpen className="w-8 h-8 text-purple-400" />
@@ -200,7 +320,7 @@ export default function Chat() {
               <p className="text-[var(--text-secondary)] max-w-md mb-6">
                 Before you can start, please set your Google API key in{' '}
                 <button 
-                  onClick={() => navigate('/settings')}
+                  onClick={() => navigate(settingsPath)}
                   className="text-purple-400 hover:underline"
                 >
                   Settings
@@ -233,9 +353,38 @@ export default function Chat() {
                         : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)]'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                      {message.content}
-                    </div>
+                    {message.role === 'user' ? (
+                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                        {message.content}
+                      </div>
+                    ) : (
+                      <div className="prose prose-sm prose-invert max-w-none text-[var(--text-primary)]">
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            a: ({ href, children }) => (
+                              <a href={href} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 underline">
+                                {children}
+                              </a>
+                            ),
+                            h1: ({ children }) => <h1 className="text-xl font-bold mt-4 mb-2 text-[var(--text-primary)]">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-lg font-bold mt-3 mb-2 text-[var(--text-primary)]">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-base font-semibold mt-2 mb-1 text-[var(--text-primary)]">{children}</h3>,
+                            p: ({ children }) => <p className="mb-2 text-[var(--text-primary)]">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                            li: ({ children }) => <li className="text-[var(--text-primary)]">{children}</li>,
+                            strong: ({ children }) => <strong className="font-bold text-[var(--text-primary)]">{children}</strong>,
+                            em: ({ children }) => <em className="italic">{children}</em>,
+                            code: ({ children }) => <code className="bg-[var(--bg-tertiary)] px-1 py-0.5 rounded text-sm text-purple-300">{children}</code>,
+                            pre: ({ children }) => <pre className="bg-[var(--bg-tertiary)] p-3 rounded-lg overflow-x-auto my-2">{children}</pre>,
+                            blockquote: ({ children }) => <blockquote className="border-l-4 border-purple-500 pl-4 italic my-2">{children}</blockquote>,
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -261,8 +410,8 @@ export default function Chat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={user?.has_api_key ? "Ask for a study plan..." : "Please set your API key first..."}
-                  disabled={!user?.has_api_key || isSending}
+                  placeholder={hasApiKey ? "Ask for a study plan..." : "Please set your API key first..."}
+                  disabled={!hasApiKey || isSending}
                   rows={1}
                   className="w-full px-4 py-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-purple-500 transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ minHeight: '48px', maxHeight: '200px' }}
@@ -270,7 +419,7 @@ export default function Chat() {
               </div>
               <button
                 type="submit"
-                disabled={!input.trim() || !user?.has_api_key || isSending}
+                disabled={!input.trim() || !hasApiKey || isSending}
                 className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
               >
                 {isSending ? (

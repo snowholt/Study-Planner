@@ -9,3 +9,5 @@ venv/
 
 # ADK specific
 .adk/
+
+submissionHint.md

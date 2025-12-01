@@ -200,8 +200,8 @@ Make sure the resources are appropriate for the student's learning level.""",
 academic_agent = LlmAgent(
     name="academic_agent",
     model=MODEL_ID,
-    description="Simplifies academic content and translates explanations to target languages.",
-    instruction="""You are an expert academic translator and simplifier. Your role is to 
+    description="Simplifies academic content and optionally translates explanations to target languages.",
+    instruction="""You are an expert academic simplifier. Your role is to 
 make complex academic content accessible to students.
 
 When given an academic paper abstract or complex content:
@@ -212,17 +212,17 @@ When given an academic paper abstract or complex content:
    - Explain the main findings in plain language
    - Highlight why this research matters
 
-2. **Translate the Explanation:**
-   - After simplifying in English, translate the simplified explanation to the target language
-   - Default target language is Persian (فارسی) unless specified otherwise
-   - Maintain accuracy while being culturally appropriate
-   - Keep the translation natural and readable
+2. **Translation (ONLY if requested):**
+   - Only translate if the user explicitly asks for translation to a specific language
+   - If no translation is requested, skip this step entirely
+   - When translating, maintain accuracy while being culturally appropriate
 
 Format your response as:
-- **Simplified Explanation (English):** [Your simplified version]
-- **Translation ([Target Language]):** [Your translation]
+- **Simplified Explanation:** [Your simplified version in English]
+- **Translation ([Language]):** [Only include this section if user requested translation]
 
-Make the content engaging and suitable for students at the specified grade level.""",
+Make the content engaging and suitable for students at the specified grade level.
+Do NOT translate unless explicitly asked by the user.""",
 )
 
 

@@ -4,8 +4,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Chat from './pages/Chat';
 import Settings from './pages/Settings';
+import GuestSettings from './pages/GuestSettings';
 
-// Protected route wrapper
+// Protected route wrapper - only for authenticated users
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuthStore();
   
@@ -16,8 +17,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// Public route wrapper (redirects to chat if logged in)
-function PublicRoute({ children }: { children: React.ReactNode }) {
+// Auth pages - redirects to chat if already logged in
+function AuthRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuthStore();
   
   if (token) {
@@ -31,30 +32,31 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Main chat - accessible to everyone (guests and logged in users) */}
+        <Route path="/" element={<Chat />} />
+        
+        {/* Guest settings - for API key setup without account */}
+        <Route path="/guest-settings" element={<GuestSettings />} />
+        
+        {/* Auth routes */}
         <Route
           path="/login"
           element={
-            <PublicRoute>
+            <AuthRoute>
               <Login />
-            </PublicRoute>
+            </AuthRoute>
           }
         />
         <Route
           path="/register"
           element={
-            <PublicRoute>
+            <AuthRoute>
               <Register />
-            </PublicRoute>
+            </AuthRoute>
           }
         />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
-          }
-        />
+        
+        {/* Protected routes - require login */}
         <Route
           path="/settings"
           element={
@@ -63,6 +65,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -6,7 +6,7 @@ import aiosqlite
 import json
 
 from database import get_db
-from models import ChatRequest, ChatResponse, ChatSession, ChatSessionCreate
+from models import ChatRequest, ChatResponse, ChatSession, ChatSessionCreate, GuestChatRequest, GuestChatResponse
 from auth import get_current_user, decrypt_api_key
 from config import settings
 
@@ -171,48 +171,64 @@ async def send_message(
             detail="Failed to decrypt API key"
         )
     
+    # Set the API key as environment variable for the ADK agent
+    import os
+    os.environ["GOOGLE_API_KEY"] = api_key
+    
     # Call ADK backend
     try:
         async with httpx.AsyncClient(timeout=300.0) as client:
-            # ADK web uses a specific API format
+            # First, create a session in ADK
+            adk_user_id = f"user_{current_user['id']}"
+            session_response = await client.post(
+                f"{settings.adk_backend_url}/apps/study_planner/users/{adk_user_id}/sessions",
+                json={},
+                headers={"Content-Type": "application/json"}
+            )
+            session_response.raise_for_status()
+            session_data = session_response.json()
+            adk_session_id = session_data.get("id")
+            
+            if not adk_session_id:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail="Failed to create ADK session"
+                )
+            
+            # Now send the message using run_sse endpoint
             response = await client.post(
-                f"{settings.adk_backend_url}/api/v1/run",
+                f"{settings.adk_backend_url}/run_sse",
                 json={
                     "app_name": "study_planner",
-                    "user_id": str(current_user["id"]),
-                    "session_id": f"session_{session_id}",
+                    "user_id": adk_user_id,
+                    "session_id": adk_session_id,
                     "new_message": {
                         "role": "user",
                         "parts": [{"text": data.message}]
                     }
                 },
-                headers={
-                    "Content-Type": "application/json",
-                    "X-API-Key": api_key
-                }
+                headers={"Content-Type": "application/json"},
+                timeout=300.0
             )
             response.raise_for_status()
             
-            result = response.json()
-            
-            # Extract assistant response from ADK format
+            # Parse SSE response - each line starts with "data: "
             assistant_response = ""
-            if isinstance(result, list):
-                for event in result:
-                    if event.get("content") and event.get("content").get("parts"):
-                        for part in event["content"]["parts"]:
-                            if part.get("text"):
-                                assistant_response += part["text"]
-            elif isinstance(result, dict):
-                if result.get("content") and result.get("content").get("parts"):
-                    for part in result["content"]["parts"]:
-                        if part.get("text"):
-                            assistant_response += part["text"]
-                elif result.get("response"):
-                    assistant_response = result["response"]
+            for line in response.text.split("\n"):
+                if line.startswith("data: "):
+                    try:
+                        event_data = json.loads(line[6:])  # Remove "data: " prefix
+                        if event_data.get("content") and event_data.get("content").get("parts"):
+                            for part in event_data["content"]["parts"]:
+                                if part.get("text"):
+                                    assistant_response += part["text"] + "\n\n"
+                    except json.JSONDecodeError:
+                        continue
             
             if not assistant_response:
                 assistant_response = "I apologize, but I couldn't generate a response. Please try again."
+            else:
+                assistant_response = assistant_response.strip()
             
     except httpx.HTTPStatusError as e:
         raise HTTPException(
@@ -239,3 +255,91 @@ async def send_message(
     await db.commit()
     
     return ChatResponse(response=assistant_response, session_id=session_id)
+
+
+@router.post("/guest", response_model=GuestChatResponse)
+async def guest_chat(data: GuestChatRequest):
+    """Send a message as a guest user (no account required).
+    
+    The API key is provided in the request and not stored.
+    Conversation history is managed client-side.
+    """
+    import os
+    import uuid
+    
+    # Set the API key as environment variable for the ADK agent
+    os.environ["GOOGLE_API_KEY"] = data.api_key
+    
+    try:
+        async with httpx.AsyncClient(timeout=300.0) as client:
+            # Generate a unique guest session ID per request or use a stable one
+            guest_user_id = "guest"
+            
+            # First, create a session in ADK
+            session_response = await client.post(
+                f"{settings.adk_backend_url}/apps/study_planner/users/{guest_user_id}/sessions",
+                json={},
+                headers={"Content-Type": "application/json"}
+            )
+            session_response.raise_for_status()
+            session_data = session_response.json()
+            adk_session_id = session_data.get("id")
+            
+            if not adk_session_id:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail="Failed to create ADK session"
+                )
+            
+            # Now send the message using run_sse endpoint
+            response = await client.post(
+                f"{settings.adk_backend_url}/run_sse",
+                json={
+                    "app_name": "study_planner",
+                    "user_id": guest_user_id,
+                    "session_id": adk_session_id,
+                    "new_message": {
+                        "role": "user",
+                        "parts": [{"text": data.message}]
+                    }
+                },
+                headers={"Content-Type": "application/json"},
+                timeout=300.0
+            )
+            response.raise_for_status()
+            
+            # Parse SSE response - each line starts with "data: "
+            assistant_response = ""
+            for line in response.text.split("\n"):
+                if line.startswith("data: "):
+                    try:
+                        event_data = json.loads(line[6:])  # Remove "data: " prefix
+                        if event_data.get("content") and event_data.get("content").get("parts"):
+                            for part in event_data["content"]["parts"]:
+                                if part.get("text"):
+                                    assistant_response += part["text"] + "\n\n"
+                    except json.JSONDecodeError:
+                        continue
+            
+            if not assistant_response:
+                assistant_response = "I apologize, but I couldn't generate a response. Please try again."
+            else:
+                assistant_response = assistant_response.strip()
+            
+    except httpx.HTTPStatusError as e:
+        error_detail = "ADK backend error"
+        try:
+            error_detail = e.response.text
+        except:
+            pass
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Error communicating with AI: {error_detail}"
+        )
+    except httpx.RequestError as e:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Failed to connect to AI service: {str(e)}"
+        )
+    
+    return GuestChatResponse(response=assistant_response)
