@@ -21,6 +21,13 @@ The **ADK Study Planner** solves these problems with a coordinated team of AI ag
 2.  **Researcher Agent:** Curates relevant YouTube videos and finds the latest academic papers on the topic.
 3.  **Academic Agent:** Simplifies complex abstracts and translates explanations into the student's native language (e.g., Persian).
 
+## 🤖 Why Agents?
+
+A simple script or chatbot wouldn't suffice for this application. Agents are the ideal solution because:
+*   **Sequential Reasoning:** The output of the planning phase directly informs the research parameters, requiring a system that can maintain context and pass state between distinct "experts."
+*   **Autonomous Tool Use:** The Researcher agent must dynamically decide *what* to search for on Google or Arxiv based on the specific nuances of the generated plan, rather than following a hard-coded search pattern.
+*   **Adaptability:** Agents can adjust their complexity and tone (e.g., simplifying quantum physics for a 10th grader vs. a university student) in a way that static code cannot.
+
 ## 🏗️ Architecture
 
 The system uses a **Sequential Multi-Agent Architecture** orchestrated by a root coordinator agent.
@@ -122,6 +129,13 @@ Access the web app at `http://localhost:5173`.
 *   **Day 1-5 Plan:** Introduction to particles, wave-particle duality, etc.
 *   **Resources:** Links to "Quantum Physics for Babies" video, Arxiv paper on Quantum Education.
 *   **Simplified Content:** "Quantum entanglement is like having two magic dice..." translated to Persian.
+
+## 🔮 Future Improvements (If I had more time)
+
+*   **Calendar Integration:** Automatically add the generated 5-day plan to the user's Google Calendar.
+*   **Quiz Generation:** Add a "Teacher Agent" to generate daily quizzes based on the study material.
+*   **Voice Interface:** Enable voice-to-text for queries and text-to-speech for reading out the simplified summaries.
+*   **Multi-Modal Inputs:** Allow users to upload a textbook PDF for the agents to analyze and plan around.
 
 ## 🏆 Submission Details
 
