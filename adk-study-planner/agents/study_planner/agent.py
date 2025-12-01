@@ -17,11 +17,14 @@ from google.adk.tools import google_search
 import arxiv
 
 # Load environment variables from .env file
-env_path = Path(__file__).parent.parent / ".env"
+env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 # Model configuration
-MODEL_ID = "gemini-2.5-flash-lite"
+# gemini-2.5-flash-lite doesn't support function calling (tools)
+# Use gemini-2.0-flash for agents that need tools
+MODEL_ID = "gemini-2.0-flash"
+MODEL_ID_LITE = "gemini-2.0-flash"  # Use same model for consistency
 
 
 # ============== TOOLS ==============
