@@ -1,6 +1,19 @@
 @import "tailwindcss";
 
+/* Light mode (default when .dark is not present) */
 :root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6c757d;
+  --accent-primary: #a855f7;
+  --accent-secondary: #ec4899;
+  --border-color: #dee2e6;
+}
+
+/* Dark mode */
+:root.dark {
   --bg-primary: #0a0a0f;
   --bg-secondary: #13131a;
   --bg-tertiary: #1c1c26;

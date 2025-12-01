@@ -9,7 +9,7 @@ import remarkGfm from 'remark-gfm';
 import api from '../lib/api';
 import { 
   Plus, 
-  Send, 
+  ArrowUp, 
   Settings, 
   LogOut, 
   LogIn,
@@ -20,7 +20,10 @@ import {
   Menu,
   X,
   AlertCircle,
-  UserPlus
+  UserPlus,
+  Paperclip,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface Message {
@@ -59,8 +62,18 @@ export default function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [guestSending, setGuestSending] = useState(false);
   const [guestError, setGuestError] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark') || 
+             localStorage.getItem('theme') === 'dark' ||
+             (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    return true;
+  });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   // Determine if user is authenticated
@@ -81,6 +94,37 @@ export default function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Theme toggle effect
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   // Guest message handler
   const sendGuestMessage = async (message: string) => {
@@ -283,6 +327,17 @@ export default function Chat() {
           <h1 className="font-medium text-[var(--text-primary)] truncate flex-1">
             {isAuthenticated ? (currentSession?.title || 'New Conversation') : 'Guest Session'}
           </h1>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDarkMode ? (
+              <Sun className="w-5 h-5 text-[var(--text-secondary)]" />
+            ) : (
+              <Moon className="w-5 h-5 text-[var(--text-secondary)]" />
+            )}
+          </button>
           {!isAuthenticated && (
             <button
               onClick={() => navigate('/register')}
@@ -403,7 +458,39 @@ export default function Chat() {
         {/* Input Area */}
         <div className="p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+            {/* Selected file preview */}
+            {selectedFile && (
+              <div className="mb-2 flex items-center gap-2 px-3 py-2 bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-color)]">
+                <Paperclip className="w-4 h-4 text-[var(--text-secondary)]" />
+                <span className="text-sm text-[var(--text-primary)] flex-1 truncate">{selectedFile.name}</span>
+                <button
+                  type="button"
+                  onClick={removeSelectedFile}
+                  className="p-1 rounded hover:bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:text-red-400 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
             <div className="flex gap-3 items-end">
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".pdf,.doc,.docx,.txt,.md"
+              />
+              {/* File upload button */}
+              <button
+                type="button"
+                onClick={handleFileSelect}
+                disabled={!hasApiKey || isSending}
+                className="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                title="Upload file"
+              >
+                <Paperclip className="w-5 h-5" />
+              </button>
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
@@ -420,12 +507,12 @@ export default function Chat() {
               <button
                 type="submit"
                 disabled={!input.trim() || !hasApiKey || isSending}
-                className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
               >
                 {isSending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <ArrowUp className="w-5 h-5" />
                 )}
               </button>
             </div>
