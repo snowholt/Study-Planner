@@ -26,7 +26,9 @@ import {
   ExternalLink,
   Youtube,
   FileText,
-  Sparkles
+  Sparkles,
+  Copy,
+  Check
 } from 'lucide-react';
 
 // Custom Send Icon (paper airplane style)
@@ -471,11 +473,30 @@ export default function Chat() {
                     <div className="w-full max-w-[95%] mr-4">
                       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl rounded-tl-md px-6 py-5 shadow-sm">
                         {/* Response Header */}
-                        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[var(--border-color)]">
-                          <div className="p-1.5 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                            <Sparkles className="w-4 h-4 text-purple-400" />
+                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border-color)]">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                              <Sparkles className="w-4 h-4 text-purple-400" />
+                            </div>
+                            <span className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Study Plan Response</span>
                           </div>
-                          <span className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Study Plan Response</span>
+                          {/* Copy Button */}
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(message.content);
+                              const btn = document.getElementById(`copy-btn-${index}`);
+                              if (btn) {
+                                btn.setAttribute('data-copied', 'true');
+                                setTimeout(() => btn.removeAttribute('data-copied'), 2000);
+                              }
+                            }}
+                            id={`copy-btn-${index}`}
+                            className="group p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)] data-[copied=true]:text-green-400"
+                            title="Copy response"
+                          >
+                            <Copy className="w-4 h-4 group-data-[copied=true]:hidden" />
+                            <Check className="w-4 h-4 hidden group-data-[copied=true]:block" />
+                          </button>
                         </div>
                         
                         {/* Main Content */}
