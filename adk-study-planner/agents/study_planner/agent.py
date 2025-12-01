@@ -3,7 +3,7 @@ Study Planner Agent - Main agent definition for ADK web.
 
 This module defines the root_agent that orchestrates the multi-agent study planning system:
 1. Planner Agent - Creates a 5-day study schedule
-2. Researcher Agent - Finds educational videos and academic papers
+2. Researcher Agent - Finds academic papers via Arxiv
 3. Academic Agent - Simplifies and translates academic content
 """
 
@@ -12,7 +12,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import google_search
 
 import arxiv
 
@@ -20,11 +19,8 @@ import arxiv
 env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-# Model configuration
-# gemini-2.5-flash-lite doesn't support function calling (tools)
-# Use gemini-2.0-flash for agents that need tools
-MODEL_ID = "gemini-2.0-flash"
-MODEL_ID_LITE = "gemini-2.0-flash"  # Use same model for consistency
+# Model configuration - using gemini-2.5-flash for best performance
+MODEL_ID = "gemini-2.5-flash"
 
 
 # ============== TOOLS ==============
@@ -100,33 +96,35 @@ Format your response as a clear, structured 5-day plan with:
 Be encouraging and make the plan achievable for the student's level.""",
 )
 
-# Researcher Agent: Finds videos and academic papers
+# Researcher Agent: Finds academic papers using Arxiv
 researcher_agent = LlmAgent(
     name="researcher_agent",
     model=MODEL_ID,
-    description="Finds educational YouTube videos and academic papers for study topics.",
+    description="Finds academic papers from Arxiv and recommends educational resources.",
     instruction="""You are an expert research assistant specializing in finding 
 educational resources for students.
 
 Your tasks:
-1. Use google_search to find relevant YouTube educational videos on the topic
-2. Use search_arxiv to find one relevant academic paper
+1. Use the search_arxiv tool to find ONE relevant academic paper on the topic
+2. Based on your knowledge, recommend 2-3 popular YouTube channels or specific video topics 
+   that would help students learn about this subject
 
-When searching for videos:
-- Look for beginner-friendly, educational content
-- Prefer videos from reputable educational channels
-- Include the video title and link in your response
+When using search_arxiv:
+- Search for the main topic the student is learning
+- The tool will return a paper with title, authors, abstract, and PDF link
 
-When presenting the academic paper:
-- Include the title, authors, and a brief note about the abstract
-- Explain why this paper is relevant to the study topic
+When recommending videos:
+- Suggest well-known educational channels like Khan Academy, 3Blue1Brown, Veritasium, 
+  CrashCourse, MinutePhysics, etc. based on the topic
+- Describe what type of video content to search for on YouTube
+- Be specific about video topics that match the study plan
 
 Format your response clearly with:
-- **Educational Videos:** (list 2-3 video recommendations with links)
-- **Academic Paper:** (the paper details from Arxiv)
+- **Academic Paper:** (the paper details from Arxiv including the PDF link)
+- **Recommended Video Resources:** (list 2-3 channel/video recommendations with search suggestions)
 
 Make sure the resources are appropriate for the student's learning level.""",
-    tools=[google_search, search_arxiv],
+    tools=[search_arxiv],
 )
 
 # Academic Agent: Simplifies abstracts and translates explanations
