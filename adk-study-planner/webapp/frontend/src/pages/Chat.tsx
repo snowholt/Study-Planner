@@ -456,8 +456,8 @@ export default function Chat() {
         </div>
 
         {/* Input Area */}
-        <div className="px-4 sm:px-8 lg:px-16 py-4 bg-[var(--bg-primary)]">
-          <div className="max-w-2xl mx-auto w-full">
+        <div className="py-4 bg-[var(--bg-primary)] flex justify-center">
+          <div className="w-full max-w-2xl px-4">
             {/* Selected file preview */}
             {selectedFile && (
               <div className="mb-3 flex items-center gap-2 px-3 py-2 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
