@@ -51,19 +51,19 @@ export default function GuestSettings() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Header */}
-      <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 relative flex items-center justify-center pt-[10%]">
+      <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)]">
+        <div className="max-w-2xl mx-auto px-4 py-4 relative flex items-center justify-center">
           <button 
             onClick={() => navigate('/')}
             className="absolute left-4 p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-[var(--text-secondary)]" />
           </button>
-          <h1 className="text-xl font-semibold text-[var(--text-primary)] text-justify">Guest Settings</h1>
+          <h1 className="text-xl font-semibold text-[var(--text-primary)]">Guest Settings</h1>
         </div>
       </header>
 
-      <main className="w-full flex justify-center py-12">
+      <main className="w-full flex justify-center pt-[10vh] pb-12">
         <div className="w-full max-w-2xl px-6 space-y-8">
         {/* Guest Notice */}
         <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20 shadow-lg shadow-purple-500/5 text-center">
