@@ -22,7 +22,11 @@ import {
   Paperclip,
   Sun,
   Moon,
-  Mic
+  Mic,
+  ExternalLink,
+  Youtube,
+  FileText,
+  Sparkles
 } from 'lucide-react';
 
 // Custom Send Icon (paper airplane style)
@@ -447,58 +451,115 @@ export default function Chat() {
               </p>
             </div>
           ) : (
-            <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+            <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
-                      message.role === 'user'
-                        ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]'
-                        : 'text-[var(--text-primary)]'
-                    }`}
-                  >
-                    {message.role === 'user' ? (
-                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                        {message.content}
-                      </div>
-                    ) : (
-                      <div className="prose prose-sm max-w-none text-[var(--text-primary)]">
-                        <ReactMarkdown 
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            a: ({ href, children }) => (
-                              <a href={href} target="_blank" rel="noopener noreferrer" className="text-[var(--accent-primary)] hover:underline">
-                                {children}
-                              </a>
-                            ),
-                            h1: ({ children }) => <h1 className="text-lg font-semibold mt-3 mb-2 text-[var(--text-primary)]">{children}</h1>,
-                            h2: ({ children }) => <h2 className="text-base font-semibold mt-2.5 mb-1.5 text-[var(--text-primary)]">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm font-semibold mt-2 mb-1 text-[var(--text-primary)]">{children}</h3>,
-                            p: ({ children }) => <p className="mb-2 text-[var(--text-primary)] leading-relaxed text-sm">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1 text-sm">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1 text-sm">{children}</ol>,
-                            li: ({ children }) => <li className="text-[var(--text-primary)]">{children}</li>,
-                            strong: ({ children }) => <strong className="font-semibold text-[var(--text-primary)]">{children}</strong>,
-                            em: ({ children }) => <em className="italic">{children}</em>,
-                            code: ({ children }) => <code className="bg-[var(--bg-secondary)] px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
-                            pre: ({ children }) => <pre className="bg-[var(--bg-secondary)] p-3 rounded-lg overflow-x-auto my-2 text-xs">{children}</pre>,
-                            blockquote: ({ children }) => <blockquote className="border-l-2 border-[var(--border-color)] pl-3 italic my-2 text-[var(--text-secondary)] text-sm">{children}</blockquote>,
-                          }}
-                        >
+                  {message.role === 'user' ? (
+                    /* User Message Bubble */
+                    <div className="max-w-[80%] ml-8">
+                      <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl rounded-tr-md px-5 py-3 shadow-sm">
+                        <div className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-primary)]">
                           {message.content}
-                        </ReactMarkdown>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    /* Assistant Message Bubble */
+                    <div className="w-full max-w-[95%] mr-4">
+                      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl rounded-tl-md px-6 py-5 shadow-sm">
+                        {/* Response Header */}
+                        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[var(--border-color)]">
+                          <div className="p-1.5 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                            <Sparkles className="w-4 h-4 text-purple-400" />
+                          </div>
+                          <span className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Study Plan Response</span>
+                        </div>
+                        
+                        {/* Main Content */}
+                        <div className="prose prose-sm max-w-none text-[var(--text-primary)]">
+                          <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              a: ({ href, children }) => (
+                                <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-purple-400 hover:text-purple-300 hover:underline font-medium">
+                                  {children}
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              ),
+                              h1: ({ children }) => <h1 className="text-xl font-bold mt-6 mb-3 text-[var(--text-primary)] border-b border-[var(--border-color)] pb-2">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-lg font-bold mt-5 mb-2 text-[var(--text-primary)]">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-base font-semibold mt-4 mb-2 text-[var(--text-primary)] flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>{children}</h3>,
+                              p: ({ children }) => <p className="mb-3 text-[var(--text-primary)] leading-relaxed text-sm">{children}</p>,
+                              ul: ({ children }) => <ul className="list-none mb-3 space-y-2 text-sm ml-4">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal list-outside mb-3 space-y-2 text-sm ml-6">{children}</ol>,
+                              li: ({ children }) => <li className="text-[var(--text-primary)] relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-purple-400 before:font-bold">{children}</li>,
+                              strong: ({ children }) => <strong className="font-semibold text-[var(--text-primary)]">{children}</strong>,
+                              em: ({ children }) => <em className="italic text-[var(--text-secondary)]">{children}</em>,
+                              code: ({ children }) => <code className="bg-[var(--bg-tertiary)] px-1.5 py-0.5 rounded text-xs font-mono text-purple-300">{children}</code>,
+                              pre: ({ children }) => <pre className="bg-[var(--bg-tertiary)] p-4 rounded-xl overflow-x-auto my-3 text-xs border border-[var(--border-color)]">{children}</pre>,
+                              blockquote: ({ children }) => <blockquote className="border-l-3 border-purple-500/50 pl-4 py-2 my-3 bg-purple-500/5 rounded-r-lg italic text-[var(--text-secondary)] text-sm">{children}</blockquote>,
+                              hr: () => <hr className="my-4 border-[var(--border-color)]" />,
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                        
+                        {/* Extract and display resource links as buttons */}
+                        {(() => {
+                          const youtubeLinks = message.content.match(/https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[^\s)]+/g) || [];
+                          const arxivLinks = message.content.match(/https?:\/\/arxiv\.org\/[^\s)]+/g) || [];
+                          const hasLinks = youtubeLinks.length > 0 || arxivLinks.length > 0;
+                          
+                          if (!hasLinks) return null;
+                          
+                          return (
+                            <div className="mt-5 pt-4 border-t border-[var(--border-color)]">
+                              <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-3">Resources Found</p>
+                              <div className="flex flex-wrap gap-2">
+                                {youtubeLinks.slice(0, 3).map((link, i) => (
+                                  <a
+                                    key={`yt-${i}`}
+                                    href={link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-colors text-xs font-medium"
+                                  >
+                                    <Youtube className="w-4 h-4" />
+                                    Video {i + 1}
+                                  </a>
+                                ))}
+                                {arxivLinks.slice(0, 2).map((link, i) => (
+                                  <a
+                                    key={`arxiv-${i}`}
+                                    href={link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-medium"
+                                  >
+                                    <FileText className="w-4 h-4" />
+                                    Paper {i + 1}
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {isSending && (
                 <div className="flex justify-start">
-                  <div className="px-4 py-2.5">
-                    <Loader2 className="w-4 h-4 animate-spin text-[var(--text-secondary)]" />
+                  <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl px-5 py-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+                      <span className="text-sm text-[var(--text-secondary)]">Generating your study plan...</span>
+                    </div>
                   </div>
                 </div>
               )}
