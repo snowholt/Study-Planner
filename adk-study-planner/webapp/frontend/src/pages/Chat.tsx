@@ -494,8 +494,8 @@ export default function Chat() {
                   placeholder={hasApiKey ? "Ask for a study plan..." : "Set your API key in settings..."}
                   disabled={!hasApiKey || isSending}
                   rows={1}
-                  className="w-full px-4 pt-3 pb-12 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm placeholder:text-center"
-                  style={{ minHeight: '48px', maxHeight: '160px' }}
+                  className="w-full px-6 pt-4 pb-14 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm placeholder:text-center"
+                  style={{ minHeight: '56px', maxHeight: '160px' }}
                 />
                 
                 {/* Bottom toolbar */}
