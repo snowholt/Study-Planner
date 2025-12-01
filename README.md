@@ -128,3 +128,13 @@ Access the web app at `http://localhost:5173`.
 This project is submitted for the **Agents Intensive Capstone Project**.
 *   **Track:** Agents for Good
 *   **Team:** Individual
+
+## 👤 Author
+
+**Nariman Jafari**
+
+*   🌐 **Website/Email:** [hello@pinkcodequeen.com](mailto:hello@pinkcodequeen.com)
+*   👔 **LinkedIn:** [linkedin.com/in/narimanjafari](https://www.linkedin.com/in/narimanjafari/)
+*   🐙 **GitHub:** [@snowholt](https://github.com/snowholt)
+*   🏅 **Kaggle:** [@snowholt](https://www.kaggle.com/snowholt)
+
