@@ -86,7 +86,7 @@ This project demonstrates the following key concepts from the AI Agents Intensiv
 
 4.  **Run the CLI Agent:**
     ```bash
-    python src/main.py
+    python -m src.main
     ```
 
 ### 2. Web Application Setup (Optional)
