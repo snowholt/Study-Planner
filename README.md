@@ -67,6 +67,19 @@ This project demonstrates the following key concepts from the AI Agents Intensiv
     *   **Custom**: `search_arxiv` tool using the Arxiv API for academic research.
 3.  **Sessions & Memory**: Uses `InMemorySessionService` to maintain conversation context and user preferences across the workflow.
 
+## ✨ Web Interface Features
+
+The modern web application includes several user-friendly features:
+
+| Feature | Description |
+|---------|-------------|
+| 🎤 **Voice Input** | Speech-to-text transcription using Web Speech API for hands-free query input |
+| 🔗 **Smart Resource Buttons** | Intelligent contextual buttons that auto-extract YouTube videos and arXiv papers from responses |
+| 📋 **One-Click Copy** | Easily copy the entire response with a single click |
+| 🌙 **Dark/Light Theme** | Toggle between dark and light modes for comfortable reading |
+| 💬 **Modern Chat UI** | Clean, Gemini-inspired interface with professional message styling |
+| 📎 **File Attachments** | Support for uploading documents (PDF, DOC, TXT) |
+
 ## 🚀 Setup & Usage
 
 ### Prerequisites
@@ -132,12 +145,14 @@ Access the web app at `http://localhost:5173`.
 *   **Resources:** Links to "Quantum Physics for Babies" video, Arxiv paper on Quantum Education.
 *   **Simplified Content:** "Quantum entanglement is like having two magic dice..." translated to Persian.
 
-## 🔮 Future Improvements (If I had more time)
+## 🔮 Future Improvements
 
 *   **Calendar Integration:** Automatically add the generated 5-day plan to the user's Google Calendar.
 *   **Quiz Generation:** Add a "Teacher Agent" to generate daily quizzes based on the study material.
-*   **Voice Interface:** Enable voice-to-text for queries and text-to-speech for reading out the simplified summaries.
+*   ~~**Voice Interface:** Enable voice-to-text for queries.~~ ✅ **Completed!**
+*   **Text-to-Speech:** Add audio playback for reading out the simplified summaries.
 *   **Multi-Modal Inputs:** Allow users to upload a textbook PDF for the agents to analyze and plan around.
+*   **Progress Tracking:** Track learning progress and provide personalized recommendations.
 
 ## 🏆 Submission Details
 

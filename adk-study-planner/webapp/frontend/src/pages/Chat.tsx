@@ -453,7 +453,7 @@ export default function Chat() {
               </p>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
+            <div className="space-y-6" style={{ padding: '5%' }}>
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -461,7 +461,7 @@ export default function Chat() {
                 >
                   {message.role === 'user' ? (
                     /* User Message Bubble */
-                    <div className="max-w-[80%] ml-8">
+                    <div className="max-w-[80%]">
                       <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl rounded-tr-md px-5 py-3 shadow-sm">
                         <div className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-primary)]">
                           {message.content}
@@ -470,33 +470,14 @@ export default function Chat() {
                     </div>
                   ) : (
                     /* Assistant Message Bubble */
-                    <div className="w-full max-w-[95%] mr-4">
-                      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl rounded-tl-md px-6 py-5 shadow-sm">
+                    <div className="w-full">
+                      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl rounded-tl-md shadow-sm" style={{ padding: '20px 24px' }}>
                         {/* Response Header */}
-                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border-color)]">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                              <Sparkles className="w-4 h-4 text-purple-400" />
-                            </div>
-                            <span className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Study Plan Response</span>
+                        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[var(--border-color)]">
+                          <div className="p-1.5 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                            <Sparkles className="w-4 h-4 text-purple-400" />
                           </div>
-                          {/* Copy Button */}
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(message.content);
-                              const btn = document.getElementById(`copy-btn-${index}`);
-                              if (btn) {
-                                btn.setAttribute('data-copied', 'true');
-                                setTimeout(() => btn.removeAttribute('data-copied'), 2000);
-                              }
-                            }}
-                            id={`copy-btn-${index}`}
-                            className="group p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)] data-[copied=true]:text-green-400"
-                            title="Copy response"
-                          >
-                            <Copy className="w-4 h-4 group-data-[copied=true]:hidden" />
-                            <Check className="w-4 h-4 hidden group-data-[copied=true]:block" />
-                          </button>
+                          <span className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Study Plan Response</span>
                         </div>
                         
                         {/* Main Content */}
@@ -540,16 +521,16 @@ export default function Chat() {
                           return (
                             <div className="mt-5 pt-4 border-t border-[var(--border-color)]">
                               <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-3">Resources Found</p>
-                              <div className="flex flex-wrap gap-2">
+                              <div className="flex flex-wrap gap-3">
                                 {youtubeLinks.slice(0, 3).map((link, i) => (
                                   <a
                                     key={`yt-${i}`}
                                     href={link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-colors text-xs font-medium"
+                                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-red-500/40 text-red-400 hover:border-red-400 hover:text-red-300 transition-colors text-sm font-medium"
                                   >
-                                    <Youtube className="w-4 h-4" />
+                                    <Youtube className="w-5 h-5" />
                                     Video {i + 1}
                                   </a>
                                 ))}
@@ -559,9 +540,9 @@ export default function Chat() {
                                     href={link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors text-xs font-medium"
+                                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-blue-500/40 text-blue-400 hover:border-blue-400 hover:text-blue-300 transition-colors text-sm font-medium"
                                   >
-                                    <FileText className="w-4 h-4" />
+                                    <FileText className="w-5 h-5" />
                                     Paper {i + 1}
                                   </a>
                                 ))}
@@ -569,6 +550,28 @@ export default function Chat() {
                             </div>
                           );
                         })()}
+                        
+                        {/* Copy Button at bottom */}
+                        <div className="mt-5 pt-4 border-t border-[var(--border-color)] flex justify-end">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(message.content);
+                              const btn = document.getElementById(`copy-btn-${index}`);
+                              if (btn) {
+                                btn.setAttribute('data-copied', 'true');
+                                setTimeout(() => btn.removeAttribute('data-copied'), 2000);
+                              }
+                            }}
+                            id={`copy-btn-${index}`}
+                            className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--border-color)] hover:border-[var(--text-secondary)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)] data-[copied=true]:text-green-400 data-[copied=true]:border-green-400/50 text-sm font-medium"
+                            title="Copy response"
+                          >
+                            <Copy className="w-4 h-4 group-data-[copied=true]:hidden" />
+                            <Check className="w-4 h-4 hidden group-data-[copied=true]:block" />
+                            <span className="group-data-[copied=true]:hidden">Copy</span>
+                            <span className="hidden group-data-[copied=true]:inline">Copied!</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
