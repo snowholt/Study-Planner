@@ -1,6 +1,8 @@
 # ADK Study Planner 🎓
 ### Your Personal AI Study Companion for Personalized Learning
 
+**✨ Live Demo:** [https://academy.pinkcodequeen.com](https://academy.pinkcodequeen.com)
+
 **Track:** Agents for Good (Education)
 
 ## 📖 Overview
@@ -147,7 +149,8 @@ This project is submitted for the **Agents Intensive Capstone Project**.
 
 **Nariman Jafari**
 
-*   🌐 **Website/Email:** [hello@pinkcodequeen.com](mailto:hello@pinkcodequeen.com)
+*   🌐 **Live Demo:** [academy.pinkcodequeen.com](https://academy.pinkcodequeen.com)
+*   📧 **Email:** [hello@pinkcodequeen.com](mailto:hello@pinkcodequeen.com)
 *   👔 **LinkedIn:** [linkedin.com/in/narimanjafari](https://www.linkedin.com/in/narimanjafari/)
 *   🐙 **GitHub:** [@snowholt](https://github.com/snowholt)
 *   🏅 **Kaggle:** [@snowholt](https://www.kaggle.com/snowholt)
