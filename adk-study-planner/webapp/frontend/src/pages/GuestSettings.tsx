@@ -52,21 +52,21 @@ export default function GuestSettings() {
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Header */}
       <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 relative flex items-center justify-center">
+        <div className="max-w-2xl mx-auto px-4 py-4 relative flex items-center justify-center pt-[10%]">
           <button 
             onClick={() => navigate('/')}
             className="absolute left-4 p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-[var(--text-secondary)]" />
           </button>
-          <h1 className="text-xl font-semibold text-[var(--text-primary)]">Guest Settings</h1>
+          <h1 className="text-xl font-semibold text-[var(--text-primary)] text-justify">Guest Settings</h1>
         </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-12 space-y-8">
         {/* Guest Notice */}
-        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20 shadow-lg shadow-purple-500/5">
-          <div className="flex items-start justify-between gap-6 mb-6">
+        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20 shadow-lg shadow-purple-500/5 text-center">
+          <div className="flex items-start justify-between gap-6 mb-6 text-left">
             <div>
               <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">
                 You're using Study Planner as a guest
@@ -82,7 +82,7 @@ export default function GuestSettings() {
           </div>
           <button
             onClick={() => navigate('/register')}
-            className="w-full inline-flex items-center justify-center gap-3 py-4 px-8 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20 text-lg"
+            className="w-auto inline-flex items-center justify-center gap-3 py-2 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20 text-lg"
           >
             <UserPlus className="w-5 h-5" />
             Create Free Account
@@ -162,11 +162,11 @@ export default function GuestSettings() {
               </button>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-2 justify-center">
               <button
                 type="submit"
                 disabled={!apiKey}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-[var(--text-primary)] text-[var(--bg-primary)] font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                className="flex-none w-auto py-2.5 px-6 rounded-xl bg-[var(--text-primary)] text-[var(--bg-primary)] font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
               >
                 Save Configuration
               </button>
