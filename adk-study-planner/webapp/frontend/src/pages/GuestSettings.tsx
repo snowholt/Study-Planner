@@ -63,7 +63,7 @@ export default function GuestSettings() {
         </div>
       </header>
 
-      <main className="w-full flex justify-center pt-[10vh] pb-12">
+      <main className="w-full flex justify-center pt-16 mt-8 pb-12">
         <div className="w-full max-w-2xl px-6 space-y-8">
         {/* Guest Notice */}
         <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20 shadow-lg shadow-purple-500/5 text-center">
