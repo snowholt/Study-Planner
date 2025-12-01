@@ -9,7 +9,6 @@ import remarkGfm from 'remark-gfm';
 import api from '../lib/api';
 import { 
   Plus, 
-  ArrowUp, 
   Settings, 
   LogOut, 
   LogIn,
@@ -20,11 +19,22 @@ import {
   Menu,
   X,
   AlertCircle,
-  UserPlus,
   Paperclip,
   Sun,
-  Moon
+  Moon,
+  Mic
 } from 'lucide-react';
+
+// Custom Send Icon (paper airplane style)
+const SendIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    className={className}
+  >
+    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+  </svg>
+);
 
 interface Message {
   role: 'user' | 'assistant';
@@ -208,27 +218,27 @@ export default function Chat() {
       {/* Sidebar */}
       <aside 
         className={`${
-          sidebarOpen ? 'w-72' : 'w-0'
+          sidebarOpen ? 'w-64' : 'w-0'
         } flex-shrink-0 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col transition-all duration-300 overflow-hidden`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-[var(--border-color)]">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
+        <div className="p-3 border-b border-[var(--border-color)]">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-semibold text-[var(--text-primary)] truncate">Study Planner</h2>
+              <h2 className="font-medium text-sm text-[var(--text-primary)] truncate">Study Planner</h2>
               <p className="text-xs text-[var(--text-secondary)] truncate">
-                {isAuthenticated ? user?.username : 'Guest User'}
+                {isAuthenticated ? user?.username : 'Guest'}
               </p>
             </div>
           </div>
           <button
             onClick={handleNewChat}
-            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            className="w-full py-2 px-3 rounded-lg bg-[var(--bg-tertiary)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--border-color)] transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
             New Chat
           </button>
         </div>
@@ -237,23 +247,23 @@ export default function Chat() {
         <div className="flex-1 overflow-y-auto p-2">
           {isAuthenticated ? (
             sessions.length === 0 ? (
-              <p className="text-center text-[var(--text-secondary)] text-sm py-8">
+              <p className="text-center text-[var(--text-secondary)] text-xs py-6">
                 No conversations yet
               </p>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {sessions.map((session) => (
                   <div
                     key={session.id}
-                    className={`group flex items-center gap-2 p-3 rounded-xl cursor-pointer transition-colors ${
+                    className={`group flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-colors ${
                       currentSession?.id === session.id
                         ? 'bg-[var(--bg-tertiary)]'
                         : 'hover:bg-[var(--bg-tertiary)]/50'
                     }`}
                     onClick={() => selectSession(session)}
                   >
-                    <MessageSquare className="w-4 h-4 text-[var(--text-secondary)] flex-shrink-0" />
-                    <span className="flex-1 text-sm text-[var(--text-primary)] truncate">
+                    <MessageSquare className="w-3.5 h-3.5 text-[var(--text-secondary)] flex-shrink-0" />
+                    <span className="flex-1 text-xs text-[var(--text-primary)] truncate">
                       {session.title}
                     </span>
                     <button
@@ -263,24 +273,17 @@ export default function Chat() {
                       }}
                       className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-[var(--text-secondary)] hover:text-red-400 transition-all"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ))}
               </div>
             )
           ) : (
-            <div className="text-center py-8 px-4">
-              <p className="text-[var(--text-secondary)] text-sm mb-4">
-                Sign in to save your conversations
+            <div className="text-center py-6 px-3">
+              <p className="text-[var(--text-secondary)] text-xs">
+                Sign in to save conversations
               </p>
-              <button
-                onClick={() => navigate('/register')}
-                className="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300"
-              >
-                <UserPlus className="w-4 h-4" />
-                Create Account
-              </button>
             </div>
           )}
         </div>
@@ -289,25 +292,25 @@ export default function Chat() {
         <div className="p-2 border-t border-[var(--border-color)]">
           <button
             onClick={() => navigate(settingsPath)}
-            className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
+            className="w-full p-2.5 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-2.5 text-[var(--text-secondary)]"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4" />
             <span className="text-sm">Settings</span>
           </button>
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
+              className="w-full p-2.5 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-2.5 text-[var(--text-secondary)]"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
               <span className="text-sm">Sign out</span>
             </button>
           ) : (
             <button
               onClick={() => navigate('/login')}
-              className="w-full p-3 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-3 text-[var(--text-secondary)]"
+              className="w-full p-2.5 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors flex items-center gap-2.5 text-[var(--text-secondary)]"
             >
-              <LogIn className="w-5 h-5" />
+              <LogIn className="w-4 h-4" />
               <span className="text-sm">Sign in</span>
             </button>
           )}
@@ -317,35 +320,35 @@ export default function Chat() {
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Chat Header - Clean minimal style */}
-        <header className="flex items-center gap-3 px-4 py-3 bg-[var(--bg-primary)]">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-full hover:bg-[var(--bg-secondary)] transition-colors text-[var(--text-secondary)]"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-          <h1 className="font-medium text-[var(--text-primary)] truncate flex-1">
-            {isAuthenticated ? (currentSession?.title || 'New Conversation') : 'Study Planner'}
-          </h1>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-[var(--bg-secondary)] transition-colors text-[var(--text-secondary)]"
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {isDarkMode ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )}
-          </button>
-          {!isAuthenticated && (
+        <header className="flex items-center justify-between px-4 py-2.5 bg-[var(--bg-primary)] border-b border-[var(--border-color)]">
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate('/register')}
-              className="text-sm px-4 py-2 rounded-full border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors text-[var(--text-secondary)]"
             >
-              Sign Up
+              <Menu className="w-5 h-5" />
             </button>
-          )}
+            <h1 className="font-medium text-[var(--text-primary)] text-sm">
+              {isAuthenticated ? (currentSession?.title || 'New Chat') : 'Study Planner'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors text-[var(--text-secondary)]"
+              title={isDarkMode ? 'Light mode' : 'Dark mode'}
+            >
+              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            {!isAuthenticated && (
+              <button
+                onClick={() => navigate('/register')}
+                className="text-sm px-3 py-1.5 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90 transition-opacity ml-1"
+              >
+                Sign Up
+              </button>
+            )}
+          </div>
         </header>
 
         {/* Error Banner */}
@@ -363,50 +366,50 @@ export default function Chat() {
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto">
           {messages.length === 0 && !hasApiKey ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-4">
-              <div className="w-14 h-14 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center mb-6">
-                <BookOpen className="w-7 h-7 text-[var(--text-secondary)]" />
+              <div className="w-12 h-12 rounded-xl bg-[var(--bg-secondary)] flex items-center justify-center mb-4">
+                <BookOpen className="w-6 h-6 text-[var(--text-secondary)]" />
               </div>
-              <h2 className="text-2xl font-normal text-[var(--text-primary)] mb-3">
+              <h2 className="text-xl font-normal text-[var(--text-primary)] mb-2">
                 Welcome to Study Planner
               </h2>
-              <p className="text-[var(--text-secondary)] max-w-md mb-6 text-base">
-                Set up your Google API key to get started
+              <p className="text-[var(--text-secondary)] text-sm mb-4">
+                Set up your API key to get started
               </p>
               <button 
                 onClick={() => navigate(settingsPath)}
-                className="px-6 py-2.5 rounded-full border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors text-sm"
+                className="px-4 py-2 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-sm"
               >
                 Go to Settings
               </button>
             </div>
           ) : messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-4">
-              <h2 className="text-3xl font-normal text-[var(--text-primary)] mb-3">
+              <h2 className="text-2xl font-normal text-[var(--text-primary)] mb-2">
                 What would you like to learn?
               </h2>
-              <p className="text-[var(--text-secondary)] max-w-md text-base">
+              <p className="text-[var(--text-secondary)] text-sm">
                 Ask me to create a study plan for any topic
               </p>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-3xl px-5 py-3 ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                       message.role === 'user'
                         ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]'
                         : 'text-[var(--text-primary)]'
                     }`}
                   >
                     {message.role === 'user' ? (
-                      <div className="whitespace-pre-wrap text-base leading-relaxed">
+                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
                         {message.content}
                       </div>
                     ) : (
@@ -419,18 +422,18 @@ export default function Chat() {
                                 {children}
                               </a>
                             ),
-                            h1: ({ children }) => <h1 className="text-xl font-semibold mt-4 mb-2 text-[var(--text-primary)]">{children}</h1>,
-                            h2: ({ children }) => <h2 className="text-lg font-semibold mt-3 mb-2 text-[var(--text-primary)]">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-base font-semibold mt-2 mb-1 text-[var(--text-primary)]">{children}</h3>,
-                            p: ({ children }) => <p className="mb-3 text-[var(--text-primary)] leading-relaxed">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc list-inside mb-3 space-y-1.5">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal list-inside mb-3 space-y-1.5">{children}</ol>,
+                            h1: ({ children }) => <h1 className="text-lg font-semibold mt-3 mb-2 text-[var(--text-primary)]">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-base font-semibold mt-2.5 mb-1.5 text-[var(--text-primary)]">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm font-semibold mt-2 mb-1 text-[var(--text-primary)]">{children}</h3>,
+                            p: ({ children }) => <p className="mb-2 text-[var(--text-primary)] leading-relaxed text-sm">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1 text-sm">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1 text-sm">{children}</ol>,
                             li: ({ children }) => <li className="text-[var(--text-primary)]">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold text-[var(--text-primary)]">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
-                            code: ({ children }) => <code className="bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>,
-                            pre: ({ children }) => <pre className="bg-[var(--bg-secondary)] p-4 rounded-xl overflow-x-auto my-3 text-sm">{children}</pre>,
-                            blockquote: ({ children }) => <blockquote className="border-l-3 border-[var(--border-color)] pl-4 italic my-3 text-[var(--text-secondary)]">{children}</blockquote>,
+                            code: ({ children }) => <code className="bg-[var(--bg-secondary)] px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                            pre: ({ children }) => <pre className="bg-[var(--bg-secondary)] p-3 rounded-lg overflow-x-auto my-2 text-xs">{children}</pre>,
+                            blockquote: ({ children }) => <blockquote className="border-l-2 border-[var(--border-color)] pl-3 italic my-2 text-[var(--text-secondary)] text-sm">{children}</blockquote>,
                           }}
                         >
                           {message.content}
@@ -442,8 +445,8 @@ export default function Chat() {
               ))}
               {isSending && (
                 <div className="flex justify-start">
-                  <div className="px-5 py-3">
-                    <Loader2 className="w-5 h-5 animate-spin text-[var(--text-secondary)]" />
+                  <div className="px-4 py-2.5">
+                    <Loader2 className="w-4 h-4 animate-spin text-[var(--text-secondary)]" />
                   </div>
                 </div>
               )}
@@ -453,82 +456,91 @@ export default function Chat() {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-[var(--bg-primary)]">
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+        <div className="px-4 py-4 bg-[var(--bg-primary)]">
+          <div className="max-w-2xl mx-auto">
             {/* Selected file preview */}
             {selectedFile && (
-              <div className="mb-3 flex items-center gap-2 px-4 py-2.5 bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)]">
+              <div className="mb-3 flex items-center gap-2 px-3 py-2 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
                 <Paperclip className="w-4 h-4 text-[var(--text-secondary)]" />
                 <span className="text-sm text-[var(--text-primary)] flex-1 truncate">{selectedFile.name}</span>
                 <button
                   type="button"
                   onClick={removeSelectedFile}
-                  className="p-1 rounded-full hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                  className="p-1 rounded hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
             
-            {/* Gemini-style input container */}
-            <div className="relative bg-[var(--bg-secondary)] rounded-3xl border border-[var(--border-color)] focus-within:border-[var(--text-secondary)] transition-colors shadow-sm">
-              {/* Hidden file input */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept=".pdf,.doc,.docx,.txt,.md"
-              />
-              
-              {/* Textarea */}
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={hasApiKey ? "Ask for a study plan..." : "Please set your API key first..."}
-                disabled={!hasApiKey || isSending}
-                rows={1}
-                className="w-full px-5 pt-4 pb-14 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed text-base"
-                style={{ minHeight: '56px', maxHeight: '200px' }}
-              />
-              
-              {/* Bottom toolbar inside the input */}
-              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                {/* Left side icons */}
-                <div className="flex items-center gap-1">
-                  {/* File upload button */}
+            {/* Input container */}
+            <form onSubmit={handleSubmit}>
+              <div className="relative bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] focus-within:border-[var(--text-secondary)]/50 transition-colors">
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept=".pdf,.doc,.docx,.txt,.md"
+                />
+                
+                {/* Textarea */}
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={hasApiKey ? "Ask for a study plan..." : "Set your API key in settings..."}
+                  disabled={!hasApiKey || isSending}
+                  rows={1}
+                  className="w-full px-4 pt-3 pb-12 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  style={{ minHeight: '48px', maxHeight: '160px' }}
+                />
+                
+                {/* Bottom toolbar */}
+                <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center justify-between">
+                  {/* Left icons */}
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={handleFileSelect}
+                      disabled={!hasApiKey || isSending}
+                      className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      title="Attach file"
+                    >
+                      <Paperclip className="w-[18px] h-[18px]" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!hasApiKey || isSending}
+                      className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      title="Voice input (coming soon)"
+                    >
+                      <Mic className="w-[18px] h-[18px]" />
+                    </button>
+                  </div>
+                  
+                  {/* Send button */}
                   <button
-                    type="button"
-                    onClick={handleFileSelect}
-                    disabled={!hasApiKey || isSending}
-                    className="p-2.5 rounded-full text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Upload file"
+                    type="submit"
+                    disabled={!input.trim() || !hasApiKey || isSending}
+                    className="p-2 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-80 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                   >
-                    <Paperclip className="w-5 h-5" />
+                    {isSending ? (
+                      <Loader2 className="w-[18px] h-[18px] animate-spin" />
+                    ) : (
+                      <SendIcon className="w-[18px] h-[18px]" />
+                    )}
                   </button>
                 </div>
-                
-                {/* Right side - Send button */}
-                <button
-                  type="submit"
-                  disabled={!input.trim() || !hasApiKey || isSending}
-                  className="p-2.5 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-80 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  {isSending ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <ArrowUp className="w-5 h-5" />
-                  )}
-                </button>
               </div>
-            </div>
+            </form>
             
-            <p className="text-xs text-[var(--text-secondary)] text-center mt-3">
-              Press Enter to send, Shift+Enter for new line
+            <p className="text-[10px] text-[var(--text-secondary)] text-center mt-2 opacity-60">
+              Enter to send · Shift+Enter for new line
             </p>
-          </form>
+          </div>
         </div>
       </main>
     </div>
