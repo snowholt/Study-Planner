@@ -10,6 +10,14 @@
   --accent-primary: #a855f7;
   --accent-secondary: #ec4899;
   --border-color: #dee2e6;
+
+  /* New Design Tokens */
+  --gradient-primary: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  --gradient-hover: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --input-glow: 0 0 0 2px rgba(168, 85, 247, 0.2);
 }
 
 /* Dark mode */
@@ -22,6 +30,14 @@
   --accent-primary: #a855f7;
   --accent-secondary: #ec4899;
   --border-color: #27272a;
+
+  /* New Design Tokens */
+  --gradient-primary: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  --gradient-hover: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
+  --glass-bg: rgba(20, 20, 25, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --input-glow: 0 0 20px rgba(236, 72, 153, 0.15);
 }
 
 * {
@@ -30,7 +46,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -60,4 +77,64 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+/* Utility Classes */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-gradient {
+  background: var(--gradient-primary);
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+.btn-gradient:hover {
+  background: var(--gradient-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.input-floating {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s ease;
+}
+
+.input-floating:focus-within {
+  box-shadow: var(--input-glow), var(--glass-shadow);
+  border-color: var(--accent-secondary);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }

@@ -1,21 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGuestStore } from '../stores/guestStore';
-import { 
-  Key, 
-  ArrowLeft, 
-  Check, 
-  AlertCircle, 
+import {
+  Key,
+  ArrowLeft,
+  Check,
+  AlertCircle,
   Trash2,
   Eye,
   EyeOff,
-  UserPlus
+  UserPlus,
+  Shield,
+  Zap,
+  Infinity as InfinityIcon,
+  Smartphone
 } from 'lucide-react';
 
 export default function GuestSettings() {
   const navigate = useNavigate();
   const { guestApiKey, setGuestApiKey, removeGuestApiKey } = useGuestStore();
-  
+
   const [apiKey, setApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [success, setSuccess] = useState('');
@@ -31,7 +35,6 @@ export default function GuestSettings() {
       return;
     }
 
-    // Basic validation - Google API keys typically start with 'AIza'
     if (!apiKey.startsWith('AIza')) {
       setError('This doesn\'t look like a valid Google API key');
       return;
@@ -49,186 +52,166 @@ export default function GuestSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
-      {/* Header */}
-      <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)]">
-        <div className="max-w-2xl mx-auto px-4 py-4 relative flex items-center justify-center">
-          <button 
-            onClick={() => navigate('/')}
-            className="absolute left-4 p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-[var(--text-secondary)]" />
-          </button>
-          <h1 className="text-xl font-semibold text-[var(--text-primary)]">Guest Settings</h1>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-purple-500/10 blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-pink-500/10 blur-[100px]" />
+      </div>
 
-      <main className="w-full flex justify-center pt-16 mt-8 pb-12">
-        <div className="w-full max-w-2xl px-6 space-y-8">
-        {/* Guest Notice */}
-        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20 shadow-lg shadow-purple-500/5 text-center">
-          <div className="flex items-start justify-between gap-6 mb-6 text-left">
-            <div>
-              <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">
-                You're using Study Planner as a guest
-              </h2>
-              <p className="text-base text-[var(--text-secondary)] leading-relaxed">
-                Your API key and conversations are stored locally in your browser. 
-                Create an account to save your data across devices and unlock all features.
-              </p>
-            </div>
-            <div className="hidden sm:flex p-4 bg-purple-500/10 rounded-2xl shrink-0">
-              <UserPlus className="w-8 h-8 text-purple-400" />
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/register')}
-            className="w-auto inline-flex items-center justify-center gap-3 py-2 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20 text-lg"
-          >
-            <UserPlus className="w-5 h-5" />
-            Create Free Account
-          </button>
-        </div>
+      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-6 relative z-10">
 
-        {/* API Key Section */}
-        <div className="bg-[var(--bg-secondary)] rounded-2xl p-8 border border-[var(--border-color)] shadow-sm">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-lg font-medium text-[var(--text-primary)] mb-1">Google API Key</h2>
-              <p className="text-sm text-[var(--text-secondary)]">
-                Required to power the AI assistant
-              </p>
-            </div>
-            <a 
-              href="https://aistudio.google.com/apikey" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1.5 bg-purple-500/5 px-3 py-1.5 rounded-lg transition-colors"
+        {/* Left Column: Settings Card */}
+        <div className="glass-panel rounded-3xl p-8 flex flex-col">
+          <div className="flex items-center gap-4 mb-8">
+            <button
+              onClick={() => navigate('/')}
+              className="p-2 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              Get API Key
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Guest Settings</h1>
           </div>
 
-          {/* Status */}
-          <div className={`mb-6 p-4 rounded-xl border ${guestApiKey ? 'bg-green-500/5 border-green-500/20' : 'bg-yellow-500/5 border-yellow-500/20'}`}>
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${guestApiKey ? 'bg-green-500/10' : 'bg-yellow-500/10'}`}>
-                {guestApiKey ? <Check className="w-4 h-4 text-green-400" /> : <AlertCircle className="w-4 h-4 text-yellow-400" />}
+          <div className="flex-1 flex flex-col justify-center space-y-8">
+            <div>
+              <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Configure API Key</h2>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Enter your Google API key to enable the AI assistant. Your key is stored locally in your browser.
+              </p>
+            </div>
+
+            {/* Status Indicator */}
+            <div className={`p-4 rounded-2xl border ${guestApiKey ? 'bg-green-500/5 border-green-500/20' : 'bg-yellow-500/5 border-yellow-500/20'} transition-all`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl ${guestApiKey ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
+                  {guestApiKey ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                    {guestApiKey ? 'System Ready' : 'Configuration Needed'}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    {guestApiKey ? 'You can now start chatting' : 'API key is required to proceed'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">
-                  {guestApiKey ? 'API Key Configured' : 'API Key Missing'}
-                </p>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-                  {guestApiKey ? 'You are ready to start chatting' : 'Please enter your key below to continue'}
-                </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-pink-500 transition-colors">
+                    <Key className="w-5 h-5" />
+                  </div>
+                  <input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder={guestApiKey ? '••••••••••••••••••••' : 'Paste your API key here'}
+                    className="w-full pl-12 pr-12 py-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all shadow-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors"
+                  >
+                    {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <div className="flex justify-end">
+                  <a
+                    href="https://aistudio.google.com/apikey"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-pink-500 hover:text-pink-400 hover:underline flex items-center gap-1"
+                  >
+                    Get a free API key
+                    <ArrowLeft className="w-3 h-3 rotate-180" />
+                  </a>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {success && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 mb-4 animate-in fade-in slide-in-from-top-2">
-              <Check className="w-5 h-5" />
-              <span className="text-sm">{success}</span>
-            </div>
-          )}
-
-          {error && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 mb-4 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="w-5 h-5" />
-              <span className="text-sm">{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-[var(--bg-primary)] text-[var(--text-secondary)] group-focus-within:text-purple-400 transition-colors">
-                <Key className="w-4 h-4" />
-              </div>
-              <input
-                type={showApiKey ? 'text' : 'password'}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder={guestApiKey ? '••••••••••••••••••••' : 'Enter your Google API key'}
-                style={{ paddingLeft: '52px' }}
-                className="w-full pr-12 py-3.5 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-              />
-              <button
-                type="button"
-                onClick={() => setShowApiKey(!showApiKey)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-
-            <div className="flex gap-3 pt-2 justify-center">
-              <button
-                type="submit"
-                disabled={!apiKey}
-                className="flex-none w-auto py-2.5 px-6 rounded-xl bg-[var(--text-primary)] text-[var(--bg-primary)] font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-              >
-                Save Configuration
-              </button>
-              {guestApiKey && (
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="py-2.5 px-4 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all"
-                  title="Remove API Key"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+              {success && (
+                <div className="flex items-center gap-2 text-sm text-green-400 animate-in fade-in slide-in-from-top-1">
+                  <Check className="w-4 h-4" />
+                  {success}
+                </div>
               )}
-            </div>
-          </form>
-        </div>
 
-        {/* Benefits of signing up */}
-        <div className="bg-[var(--bg-secondary)] rounded-2xl p-8 border border-[var(--border-color)] shadow-sm">
-          <h2 className="text-lg font-medium text-[var(--text-primary)] mb-6">Why create an account?</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
-              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
-                <Check className="w-4 h-4" />
+              {error && (
+                <div className="flex items-center gap-2 text-sm text-red-400 animate-in fade-in slide-in-from-top-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {error}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={!apiKey}
+                  className="flex-1 py-3.5 px-6 rounded-xl btn-gradient font-semibold text-white shadow-lg hover:shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+                >
+                  Save Configuration
+                </button>
+                {guestApiKey && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="p-3.5 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors"
+                    title="Remove API Key"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )}
               </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Sync Devices</p>
-                <p className="text-xs text-[var(--text-secondary)]">Access chats anywhere</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
-              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
-                <Check className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Secure Storage</p>
-                <p className="text-xs text-[var(--text-secondary)]">Encrypted key vault</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
-              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
-                <Check className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">No Limits</p>
-                <p className="text-xs text-[var(--text-secondary)]">Unlimited conversations</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)]">
-              <div className="p-2 rounded-lg bg-green-500/10 text-green-400">
-                <Check className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Always Free</p>
-                <p className="text-xs text-[var(--text-secondary)]">No credit card needed</p>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
+
+        {/* Right Column: Benefits / Upsell */}
+        <div className="glass-panel rounded-3xl p-8 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-purple-500/5 group-hover:opacity-75 transition-opacity" />
+
+          <div className="relative z-10 space-y-8">
+            <div className="text-center md:text-left">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Unlock Full Potential</h2>
+              <p className="text-[var(--text-secondary)]">
+                Create a free account to sync your study plans across devices and access premium features.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {[
+                { icon: Smartphone, title: 'Sync Devices', desc: 'Access your chats anywhere' },
+                { icon: Shield, title: 'Secure Storage', desc: 'Encrypted cloud vault' },
+                { icon: InfinityIcon, title: 'No Limits', desc: 'Unlimited conversation history' },
+                { icon: Zap, title: 'Always Free', desc: 'No credit card required' }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] hover:border-pink-500/30 transition-colors">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 text-pink-500">
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[var(--text-primary)] text-sm">{item.title}</h3>
+                    <p className="text-xs text-[var(--text-secondary)]">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => navigate('/register')}
+              className="w-full py-4 rounded-xl border border-[var(--border-color)] hover:border-pink-500/50 hover:bg-pink-500/5 text-[var(--text-primary)] font-semibold transition-all flex items-center justify-center gap-2 group/btn"
+            >
+              <UserPlus className="w-5 h-5 group-hover/btn:text-pink-500 transition-colors" />
+              Create Free Account
+            </button>
+          </div>
         </div>
-      </main>
+
+      </div>
     </div>
   );
 }
